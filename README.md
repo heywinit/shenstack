@@ -38,8 +38,7 @@ SHENSTACK combines cutting-edge technologies to create a seamless development ex
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/shenstack-project.git
-cd shenstack-project
+bunx create-shenstack
 
 # Install dependencies
 bun install
