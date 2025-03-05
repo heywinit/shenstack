@@ -1,6 +1,6 @@
 # SHENSTACK
 
-A high-performance, type-safe full-stack framework for building modern web applications with speed and confidence.
+A high-performance, full-stack framework for building modern web applications with speed and confidence.
 
 ## 🚀 Stack Overview
 
