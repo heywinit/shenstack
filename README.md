@@ -15,13 +15,14 @@ SHENSTACK combines cutting-edge technologies to create a seamless development ex
   - [Zustand](https://github.com/pmndrs/zustand) - Lightweight state management
   - [React Query](https://tanstack.com/query) - Data synchronization
   - [React Hook Form](https://react-hook-form.com/) - Form validation
+  - [Zod](https://zod.dev/) - Schema validation
 - **Backend**:
   - [ElysiaJS](https://elysiajs.com/) - TypeScript HTTP framework
   - [DrizzleORM](https://orm.drizzle.team/) - Type-safe ORM
-  - [Zod](https://zod.dev/) - Schema validation
 - **Auth**:
   - Custom Auth (DIY implementation)
-  - [BetterAuth/Clerk](https://clerk.com/) (Optional integrations)
+  - [BetterAuth](https://www.better-auth.com/)
+  - [Clerk](https://clerk.com/) (Optional integrations)
 - **Optional Integrations**:
   - Redis Cache for performance optimization
   - Sentry for error tracking and monitoring
