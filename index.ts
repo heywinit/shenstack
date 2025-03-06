@@ -8,6 +8,7 @@ import path from "path";
 async function main() {
   console.log(chalk.cyan("\n🚀 Welcome to Shenstack Setup!\n"));
 
+  // Get all user input upfront before starting operations
   const questions = await prompts([
     {
       type: "text",
@@ -29,6 +30,12 @@ async function main() {
     },
   ]);
 
+  // Check if user cancelled
+  if (!questions.projectName) {
+    console.log(chalk.red("\nSetup cancelled"));
+    process.exit(1);
+  }
+
   const { projectName, useRedis, useSentry } = questions;
 
   // Create project directory
@@ -44,15 +51,43 @@ async function main() {
   await $`rm -rf .git`;
   await $`git init`;
 
-  // Install base dependencies
+  // Install dependencies for both api and app projects
   console.log(chalk.yellow("\n📥 Installing dependencies..."));
-  await $`bun install`;
+
+  // Install API dependencies
+  console.log(chalk.cyan("Installing API dependencies..."));
+  if (fs.existsSync(path.join(projectDir, "api"))) {
+    process.chdir(path.join(projectDir, "api"));
+    await $`bun install`;
+
+    if (useRedis) {
+      console.log(chalk.yellow("\n🔄 Setting up Redis..."));
+      await $`bun add ioredis`;
+    }
+
+    if (useSentry) {
+      console.log(chalk.yellow("\n🔄 Setting up Sentry in API..."));
+      await $`bun add @sentry/node @sentry/bun`;
+    }
+  }
+
+  // Install App dependencies
+  console.log(chalk.cyan("\nInstalling App dependencies..."));
+  if (fs.existsSync(path.join(projectDir, "app"))) {
+    process.chdir(path.join(projectDir, "app"));
+    await $`bun install`;
+
+    if (useSentry) {
+      console.log(chalk.yellow("\n🔄 Setting up Sentry in App..."));
+      await $`bun add @sentry/react`;
+    }
+  }
+
+  // Return to project root
+  process.chdir(projectDir);
 
   if (useRedis) {
-    console.log(chalk.yellow("\n🔄 Setting up Redis..."));
-    await $`bun add ioredis`;
-
-    // Create Redis configuration
+    // Create Redis configuration in api project
     const redisConfig = `
 import { Redis } from "ioredis";
 
@@ -64,21 +99,21 @@ const redis = new Redis({
 export default redis;
 `;
 
-    fs.writeFileSync(path.join(projectDir, "api/lib/redis.ts"), redisConfig);
+    fs.writeFileSync(
+      path.join(projectDir, "api/src/lib/redis.ts"),
+      redisConfig
+    );
 
-    // Update .env.example
+    // Update API .env.example
     fs.appendFileSync(
-      path.join(projectDir, ".env.example"),
+      path.join(projectDir, "api/.env.example"),
       "\nREDIS_HOST=localhost\nREDIS_PORT=6379\n"
     );
   }
 
   if (useSentry) {
-    console.log(chalk.yellow("\n🔄 Setting up Sentry..."));
-    await $`bun add @sentry/node @sentry/bun`;
-
-    // Create Sentry configuration
-    const sentryConfig = `
+    // Create Sentry configuration for API
+    const sentryConfigApi = `
 import * as Sentry from "@sentry/bun";
 
 Sentry.init({
@@ -89,15 +124,44 @@ Sentry.init({
 export default Sentry;
 `;
 
-    fs.writeFileSync(path.join(projectDir, "api/lib/sentry.ts"), sentryConfig);
+    // Create Sentry configuration for App
+    const sentryConfigApp = `
+import * as Sentry from "@sentry/react";
 
-    // Update .env.example
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+
+export default Sentry;
+`;
+
+    // Ensure lib directories exist
+    fs.mkdirSync(path.join(projectDir, "api/src/lib"), { recursive: true });
+    fs.mkdirSync(path.join(projectDir, "app/src/lib"), { recursive: true });
+
+    fs.writeFileSync(
+      path.join(projectDir, "api/src/lib/sentry.ts"),
+      sentryConfigApi
+    );
+    fs.writeFileSync(
+      path.join(projectDir, "app/src/lib/sentry.ts"),
+      sentryConfigApp
+    );
+
+    // Update env files for both projects
     fs.appendFileSync(
-      path.join(projectDir, ".env.example"),
+      path.join(projectDir, "api/.env.example"),
       "\nSENTRY_DSN=your-sentry-dsn\n"
+    );
+    fs.appendFileSync(
+      path.join(projectDir, "app/.env.example"),
+      "\nNEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn\n"
     );
   }
 
+  // Clear screen before showing completion message
+  console.clear();
   console.log(chalk.green("\n✨ Project setup complete!"));
   console.log(chalk.cyan("\nNext steps:"));
   console.log(chalk.white(`1. cd ${projectName}`));
