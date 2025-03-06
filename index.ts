@@ -40,7 +40,7 @@ async function main() {
 
   // Clone base repository
   console.log(chalk.yellow("\n🔄 Cloning Shenstack template..."));
-  await $`git clone https://github.com/yourusername/create-shenstack-app.git .`;
+  await $`git clone https://github.com/heywinit/create-shenstack-app.git .`;
   await $`rm -rf .git`;
   await $`git init`;
 
