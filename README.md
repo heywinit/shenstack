@@ -38,17 +38,5 @@ SHENSTACK combines cutting-edge technologies to create a seamless development ex
 ### Installation
 
 ```bash
-# Clone the repository
-bunx create-shenstack
-
-# Install dependencies
-bun install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your configuration
-
-# Run development servers
-cd api && bun dev
-cd app && bun dev
+bunx shenstack
 ```
