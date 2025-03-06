@@ -1,9 +1,9 @@
 {
-  "name": "create-shenstack-app",
+  "name": "shenstack",
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "create-shenstack-app": "./index.ts"
+    "shenstack": "./index.ts"
   },
   "dependencies": {
     "prompts": "^2.4.2",
