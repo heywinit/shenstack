@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "shenstack": "./index.ts"
+    "shenstack": "./index.ts",
+    "shen": "./index.ts"
   },
   "dependencies": {
     "prompts": "^2.4.2",
